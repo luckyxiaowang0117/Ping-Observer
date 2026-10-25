@@ -74,7 +74,7 @@ flowchart LR
 
 ### 两类本机数据
 
-1. **应用状态文件**：`~/Desktop/IP/ping/data/state.json`。保存自动更新设置、最近检测结果和本机历史数据。
+1. **应用状态文件**：macOS 为 `~/Desktop/IP/ping/data/state.json`；Windows 安装版优先放在安装目录的 `data/state.json`，安装目录不可写时回退到 Windows 用户数据目录。保存自动更新设置、最近检测结果和本机历史数据。
 2. **小组件快照**：macOS App Group 容器中的 `ping-observer-widget.json`。由 `WidgetReloadHelper` 使用 `FileManager.containerURL(forSecurityApplicationGroupIdentifier:)` 写入，避免依赖手工拼接共享目录路径。写入后助手调用 `WidgetCenter` 请求刷新对应时间线。
 
 应用组标识由签名团队 ID 生成：
@@ -134,7 +134,7 @@ flowchart LR
 
 - Node.js **22.12 或更新版本**。
 - npm（随 Node.js 一起安装）。
-- 运行源码时会从本机 `Desktop/IP/ping/data` 读取或创建状态目录。
+- Windows 源码运行时会在 Electron 用户数据目录下保存状态；Windows 安装版优先使用安装目录中的 `data` 文件夹。
 
 ### 编译 macOS 安装包和小组件
 
@@ -210,8 +210,10 @@ npm run dist:win
 
 ## 10. 本机数据与网络
 
-- 设置和检测状态保存在 `~/Desktop/IP/ping/data/state.json`。
+- macOS 设置和检测状态保存在 `~/Desktop/IP/ping/data/state.json`。
+- Windows 安装版的设置和检测状态优先保存在应用安装目录的 `data/state.json`；若该目录不可写，则保存在 Electron 用户数据目录的 `data/state.json`。源码运行时使用 Windows 用户数据目录。
 - Windows 悬浮窗是否显示、置顶状态和上次位置也保存在同一状态文件中；关闭主窗口只隐藏到托盘，不会停止检测。
+- 首次启动新版 Windows 程序时，会把旧版 `Desktop/IP/ping/data` 中的设置、历史和应用配置迁移到新位置，并在迁移成功后清理旧目录。
 - App Group 快照保存在本机用户目录的 Group Containers 中，不会上传到 Ping Observer 自有服务器。
 - 为查询，应用会向 `ping0.cc` 发起网络请求；查询目标是当前出口 IP 及其对应详情页。
 - 代理使用系统配置。只在浏览器中运行的 VPN 扩展不一定会代理 Electron 应用。

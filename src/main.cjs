@@ -3,8 +3,32 @@ const { spawn } = require('node:child_process');
 const path = require('node:path');
 const fs = require('node:fs');
 
-const dataRoot = path.join(app.getPath('desktop'), 'IP', 'ping', 'data');
-app.setPath('userData', path.join(dataRoot, 'app-data'));
+const isWindows = process.platform === 'win32';
+const legacyDataRoot = path.join(app.getPath('desktop'), 'IP', 'ping', 'data');
+const defaultUserDataPath = app.getPath('userData');
+let dataRoot = legacyDataRoot;
+let userDataRoot = path.join(dataRoot, 'app-data');
+if (isWindows) {
+  if (app.isPackaged) {
+    const installDirectory = path.dirname(app.getPath('exe'));
+    const writeProbe = path.join(installDirectory, `.ping-observer-write-${process.pid}`);
+    try {
+      fs.writeFileSync(writeProbe, '');
+      fs.rmSync(writeProbe, { force: true });
+      dataRoot = path.join(installDirectory, 'data');
+      userDataRoot = path.join(dataRoot, 'app-data');
+    } catch (error) {
+      try { fs.rmSync(writeProbe, { force: true }); } catch {}
+      console.warn('Install directory is not writable; using the Windows user data folder:', error.message);
+      dataRoot = path.join(defaultUserDataPath, 'data');
+      userDataRoot = defaultUserDataPath;
+    }
+  } else {
+    dataRoot = path.join(defaultUserDataPath, 'data');
+    userDataRoot = defaultUserDataPath;
+  }
+}
+app.setPath('userData', userDataRoot);
 const stateFile = path.join(dataRoot, 'state.json');
 const PING0_PARTITION = 'persist:ping0-source';
 const PING0_GEO_URL = 'https://ping0.cc/geo';
@@ -22,7 +46,6 @@ let refreshing = false;
 let isQuitting = false;
 let floatingReady = false;
 let floatingBoundsTimer;
-const isWindows = process.platform === 'win32';
 const hasSingleInstance = !isWindows || app.requestSingleInstanceLock();
 let state = {
   settings: { autoRefresh: true, intervalMinutes: 30, floatingEnabled: true, floatingAlwaysOnTop: true, floatingBounds: null },
@@ -45,6 +68,42 @@ function loadState() {
     }
     lastRefreshAt = Number(state.current?.checkedAt || 0);
   } catch {}
+}
+function removeEmptyLegacyParents() {
+  for (const parent of [path.dirname(legacyDataRoot), path.dirname(path.dirname(legacyDataRoot))]) {
+    try { fs.rmdirSync(parent); } catch {}
+  }
+}
+function migrateLegacyData() {
+  if (!isWindows || path.resolve(legacyDataRoot) === path.resolve(dataRoot) || !fs.existsSync(legacyDataRoot)) return;
+  try {
+    if (!fs.existsSync(dataRoot)) {
+      try {
+        fs.renameSync(legacyDataRoot, dataRoot);
+        removeEmptyLegacyParents();
+        return;
+      } catch {}
+    }
+
+    fs.mkdirSync(dataRoot, { recursive: true });
+    const oldStateFile = path.join(legacyDataRoot, 'state.json');
+    if (fs.existsSync(stateFile) || !fs.existsSync(oldStateFile)) return;
+    fs.copyFileSync(oldStateFile, stateFile);
+
+    const oldUserData = path.join(legacyDataRoot, 'app-data');
+    if (fs.existsSync(oldUserData)) {
+      fs.cpSync(oldUserData, userDataRoot, {
+        recursive: true,
+        force: false,
+        errorOnExist: false,
+        filter: source => !['lockfile', 'SingletonLock', 'SingletonCookie', 'SingletonSocket'].includes(path.basename(source))
+      });
+    }
+    fs.rmSync(legacyDataRoot, { recursive: true, force: true });
+    removeEmptyLegacyParents();
+  } catch (error) {
+    console.warn('Unable to migrate data from the old Desktop/IP folder:', error.message);
+  }
 }
 function saveState() {
   fs.mkdirSync(dataRoot, { recursive: true });
@@ -377,6 +436,7 @@ if (isWindows && hasSingleInstance) app.on('second-instance', () => createWindow
 
 app.whenReady().then(() => {
   if (isWindows && !hasSingleInstance) return;
+  migrateLegacyData();
   loadState();
   createWindow();
   if (isWindows) {
