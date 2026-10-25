@@ -10,7 +10,7 @@ Ping Observer 是一个本机桌面网络信息观察工具。它通过 `ping0.c
 
 应用不自行推算、补齐或伪造网站没有提供的字段。网站暂时没有返回某一项、页面需要安全验证，或网页结构发生变化时，对应信息可能为空或显示等待状态。
 
-当前版本号为 **2.0.0**。桌面主程序基于 Electron；macOS 使用 SwiftUI 和 WidgetKit 小组件，Windows 使用 Electron 悬浮窗和系统托盘提供快速查看入口。Windows 适配目前面向源码运行，本次没有生成安装包。
+当前版本号为 **2.0.0**。桌面主程序基于 Electron；macOS 使用 SwiftUI 和 WidgetKit 小组件，Windows 使用 Electron 悬浮窗和系统托盘提供快速查看入口。项目配置了 Windows x64 NSIS 安装程序目标。
 
 ## 2. 功能一览
 
@@ -206,7 +206,7 @@ dist/Ping-Observer-2.0.0-macOS-arm64.dmg
 npm run dist:win
 ```
 
-预期安装程序名称格式为 `Ping-Observer-2.0.0-Windows-x64-Setup.exe`。Windows 端使用 Electron 悬浮窗和系统托盘，不使用 macOS WidgetKit。打包配置会将托盘图标复制到应用资源目录。本轮只完成源码适配，没有执行打包。
+安装程序名称为 `Ping-Observer-2.0.0-Windows-x64-Setup.exe`。Windows 端使用 Electron 悬浮窗和系统托盘，不使用 macOS WidgetKit。打包配置会将托盘图标复制到应用资源目录。生成的安装包位于 `dist/` 目录；该构建产物不会作为源码文件提交到仓库。
 
 ## 10. 本机数据与网络
 
@@ -254,7 +254,7 @@ npm run dist:win
 - 网站安全验证需要用户手动处理。
 - WidgetKit 刷新时间由 macOS 决定，主动请求刷新也不保证立刻重绘。
 - 主界面的自动检测需要应用进程保持运行；关闭窗口和退出应用在 macOS 上不完全相同。
-- Windows 悬浮窗和托盘行为需在目标 Windows 设备上实际运行确认；本轮没有执行 Windows 打包。
+- Windows x64 安装程序已生成，但尚未对安装后的程序完成完整运行验证；当前构建没有代码签名。
 - 当前 macOS arm64 安装包及 WidgetKit 流程保持独立；Windows 不包含 macOS 小组件。
 
 ## 13. 依赖与版本

@@ -1,0 +1,80 @@
+{
+  "name": "ping0-observer",
+  "version": "2.0.0",
+  "private": true,
+  "description": "A local desktop dashboard for Ping0 IP intelligence",
+  "author": "Local User",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist:mac": "npm run dist:mac:app && node build/make-dmg.cjs",
+    "dist:mac:x64": "electron-builder --mac dmg --x64",
+    "dist:win": "electron-builder --win nsis --x64",
+    "dist:mac:app": "node build/build-widget.cjs"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "cc.ping0.observer",
+    "productName": "Ping Observer",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "electronDownload": {
+      "mirror": "https://npmmirror.com/mirrors/electron/"
+    },
+    "mac": {
+      "category": "public.app-category.utilities",
+      "timestamp": "none",
+      "entitlements": "build/entitlements.mac.generated.plist",
+      "entitlementsInherit": "build/entitlements.mac.generated.plist",
+      "extraFiles": [
+        { "from": "build/macos-widget/PingObserverWidget.appex", "to": "PlugIns/PingObserverWidget.appex" },
+        { "from": "build/macos-widget/WidgetReloadHelper.app", "to": "Helpers/WidgetReloadHelper.app" }
+      ],
+      "extraResources": [
+        { "from": "build/generated-app-group.json", "to": "app-group-id.json" }
+      ],
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "artifactName": "Ping-Observer-${version}-macOS-${arch}.${ext}",
+      "icon": "build/icon.icns"
+    },
+    "win": {
+      "extraResources": [
+        { "from": "build/icon.png", "to": "tray-icon.png" }
+      ],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Ping-Observer-${version}-Windows-${arch}-Setup.${ext}",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

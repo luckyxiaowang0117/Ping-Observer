@@ -1,0 +1,13 @@
+node_modules/
+dist/
+data/
+build/macos-widget/
+build/widget-derived/
+build/entitlements.mac.generated.plist
+build/widget-entitlements.generated.plist
+build/generated-app-group.json
+
+# Xcode user-local state
+**/xcuserdata/
+*.xcuserstate
+.DS_Store

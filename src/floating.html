@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; connect-src 'none';">
+<title>Ping Observer</title>
+<style>
+:root{color-scheme:light;--ink:#182820;--muted:#77827b;--paper:#f4f5ef;--card:#fffefa;--line:#e5e8df;--green:#c2f078;--deep:#173e32;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif}
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden}body{background:transparent;color:var(--ink);font:13px var(--sans);user-select:none}.panel{height:100%;padding:15px 17px 12px;background:var(--paper);border:1px solid #dce3d8;border-radius:14px;box-shadow:0 7px 24px #172b1e24;display:flex;flex-direction:column}.top{height:25px;display:flex;align-items:center;justify-content:space-between;-webkit-app-region:drag}.brand{display:flex;align-items:center;gap:8px;font-weight:650;font-size:12px;letter-spacing:-.02em}.mark{width:23px;height:23px;border-radius:8px;background:var(--deep);color:var(--green);display:grid;place-items:center;font-size:15px}.controls{display:flex;gap:4px;-webkit-app-region:no-drag}.icon-button{width:27px;height:25px;padding:0;border:0;border-radius:7px;background:transparent;color:#66746a;font:15px var(--sans);cursor:pointer}.icon-button:hover{background:#e6ebe1;color:var(--deep)}.location{margin-top:12px;padding:11px 13px 10px;background:#e9eee3;border:1px solid #e1e8da;border-radius:11px}.label{font:8px var(--mono);letter-spacing:.1em;color:#758578}.location-value{margin-top:5px;font-size:18px;font-weight:680;letter-spacing:-.04em;line-height:1.18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.location-meta{margin-top:4px;font:8px var(--mono);color:#7c8b7b}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}.metric{min-width:0;padding:10px 12px;background:var(--card);border:1px solid var(--line);border-radius:10px}.metric-value{margin-top:6px;font:17px var(--mono);letter-spacing:-.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric-value.risk-low{color:#759b5d}.metric-value.risk-mid{color:#c9a452}.metric-value.risk-high{color:#cb685d}.metric-value small{font:9px var(--sans);letter-spacing:0;color:#7e897f}.metric-note{margin-top:3px;font-size:8px;color:#8a958b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bottom{margin-top:auto;padding-top:9px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #e2e8df;color:#818d83;font-size:8px}.status{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.status:before{content:"";display:inline-block;width:5px;height:5px;margin-right:5px;border-radius:50%;background:#82bd5a;vertical-align:1px}.status.warning:before{background:#c59b43}.status.error:before{background:#c47a69}.time{flex:none;font:8px var(--mono)}button:focus-visible{outline:2px solid #759b5d;outline-offset:1px}
+</style>
+</head>
+<body>
+<main class="panel">
+  <header class="top">
+    <div class="brand"><span class="mark">◎</span><span>Ping Observer</span></div>
+    <nav class="controls" aria-label="悬浮窗操作">
+      <button class="icon-button" id="refresh" title="立即检测" aria-label="立即检测">↻</button>
+      <button class="icon-button" id="openMain" title="打开主窗口" aria-label="打开主窗口">↗</button>
+      <button class="icon-button" id="hide" title="隐藏悬浮窗" aria-label="隐藏悬浮窗">×</button>
+    </nav>
+  </header>
+  <section class="location">
+    <div class="label">IP 位置</div>
+    <div class="location-value" id="location">等待检测</div>
+    <div class="location-meta">当前网络出口 · ping0.cc</div>
+  </section>
+  <section class="metrics">
+    <article class="metric"><div class="label">风控参考值</div><div class="metric-value" id="risk"><span id="riskNumber">—</span><small>/100</small></div><div class="metric-note" id="riskLabel">等待评分</div></article>
+    <article class="metric"><div class="label">估算共享人数</div><div class="metric-value" id="shared">—</div></article>
+  </section>
+  <footer class="bottom"><span class="status" id="status">等待首次检测</span><time class="time" id="updated">尚无更新</time></footer>
+</main>
+<script src="./floating-renderer.js"></script>
+</body>
+</html>

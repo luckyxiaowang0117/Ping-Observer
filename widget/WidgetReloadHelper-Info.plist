@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleExecutable</key><string>WidgetReloadHelper</string>
+  <key>CFBundleIdentifier</key><string>cc.ping0.observer</string>
+  <key>CFBundleName</key><string>WidgetReloadHelper</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+  <key>CFBundleShortVersionString</key><string>2.0.0</string>
+  <key>CFBundleVersion</key><string>2</string>
+  <key>LSMinimumSystemVersion</key><string>14.0</string>
+  <key>PING0_APP_GROUP</key><string>$(PING0_APP_GROUP)</string>
+  <key>LSUIElement</key><true/>
+</dict></plist>
